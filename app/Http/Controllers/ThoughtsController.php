@@ -3,22 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Thoughts;
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Auth;
 
 class ThoughtsController extends Controller
 {
+
+    protected $user_id;
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(\App\User $user)
     {
-        $thoughts = Thoughts::all()->where('user_id', Auth::user()->id);
-
-        return view('thoughts/thoughts', ['thoughts' => $thoughts]);
+        return view('thoughts/thoughts', ['thoughts' => $user->getThoughts]);
     }
 
     /**
@@ -37,13 +39,17 @@ class ThoughtsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(User $user, Request $request)
     {
-        Thoughts::create([
-            'user_id'    => Auth::user()->id,
-            'description' => $request->decription,
-        ]);
+        $thought = new Thoughts();
+        $newUser = $request->all();
+        $newUser['user_id'] = $user->getKey('id');
 
+        unset($newUser['_token']);
+
+        if($thought->create($newUser)) {
+            return back()->withInput();
+        }
     }
 
     /**
@@ -52,9 +58,9 @@ class ThoughtsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Thoughts $thought)
     {
-        return 'show';
+        return response()->json($thought);
     }
 
     /**
@@ -63,7 +69,7 @@ class ThoughtsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(\App\User $user)
     {
         return 'edit';
     }
@@ -75,7 +81,7 @@ class ThoughtsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, \App\User $user)
     {
         return 'update';
     }
@@ -86,8 +92,9 @@ class ThoughtsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(\App\User $user, Thoughts $thought)
     {
-        return 'destroy';
+        $isDeleted = $thought->delete();
+        return response()->json(compact('isDeleted'));
     }
 }
