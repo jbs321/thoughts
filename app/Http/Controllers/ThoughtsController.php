@@ -4,23 +4,27 @@ namespace App\Http\Controllers;
 
 use App\Thoughts;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Requests;
-use Illuminate\Support\Facades\Auth;
 
 class ThoughtsController extends Controller
 {
 
-    protected $user_id;
+    protected $user;
 
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(\App\User $user)
+    public function index(User $user)
     {
-        return view('thoughts/thoughts', ['thoughts' => $user->getThoughts]);
+//        ->where('created_at', '>=', Carbon::now()->startOfMonth())
+        $lastMonthThoughts = $user->thoughts()
+            ->get(['description', 'created_at'])
+            ->where('created_at', '<=', Carbon::now()->startOfMonth());
+        return response()->json($lastMonthThoughts);
     }
 
     /**
@@ -58,9 +62,9 @@ class ThoughtsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Thoughts $thought)
+    public function show(User $user, Thoughts $thought)
     {
-        return response()->json($thought);
+        return response()->json($thought->where('user_id', $user->get(['id'])));
     }
 
     /**

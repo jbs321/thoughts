@@ -1,16 +1,16 @@
 <?php
 
-Route::get('/', function () {
-    return view('welcome');
-});
+//Route::get('/', function () {
+//    return view('welcome');
+//});
+//
+////AUTH
+//Auth::routes();
 
-//AUTH
-Auth::routes();
-
-//Thoughts API
-Route::group([
-    'prefix'     => 'api',
-    'middleware' => 'auth'
-], function () {
-    Route::resource('{user}/thoughts', 'ThoughtsController');
-});
+////Thoughts API
+//Route::group([
+//    'prefix'     => 'api',
+//    'middleware' => 'auth'
+//], function () {
+//    Route::resource('{user}/thoughts', 'ThoughtsController');
+//});
