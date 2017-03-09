@@ -9,9 +9,9 @@
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::get('/{user}', 'ThoughtsController@index');
+Route::get('{user}', 'ThoughtsController@index');
 
-Route::get('/{user}/{thought}', 'ThoughtsController@show');
+Route::get('{user}/{thought}', 'ThoughtsController@show');
 
 Route::post('/', function () {
     return "Hello Mister";
